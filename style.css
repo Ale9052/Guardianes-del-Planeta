@@ -290,12 +290,13 @@ section {
 }
 
 #items {
-    min-height: 100px; 
-    margin: 2rem 0;
+    /* Estas propiedades son fundamentales para que el contenedor se muestre. */
+    height: 120px;
+    width: 100%;
+    /* Asegúrate de que no esté oculto. */
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
+    align-items: center;
 }
 
 /* Este es el cambio que necesitas */
@@ -403,4 +404,5 @@ footer {
     .guide-item, .benefit-card, .curiosity-card {
         padding: 1rem;
     }
+
 }
