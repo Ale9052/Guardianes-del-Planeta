@@ -121,12 +121,13 @@ section {
 /* --- CORRECCIONES CLAVE --- */
 
 #items {
-  position: relative; /* Mantener para referencia de objetos posicionados */
-  height: 120px;
-  user-select: none; /* Evitar selección de texto al arrastrar */
-  -webkit-user-select: none;
-  touch-action: none; /* Mejor para dispositivos táctiles */
+  position: relative;
+  width: 100%;
+  height: 150px; /* o el tamaño que quieras */
+  border: 1px solid #ccc; /* opcional para visualizar */
+  margin-bottom: 10px;
 }
+
 
 .item {
     /* Para que el item pueda moverse con absolute sin problemas */
@@ -260,3 +261,4 @@ footer {
         text-align: center;
     }
 }
+
