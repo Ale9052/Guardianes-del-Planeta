@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Evita selección de texto
+
+    // Se deshabilita la selección de texto en toda la página para evitar interferencias
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
 
@@ -23,11 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const itemContainer = document.getElementById("items");
-    // Añadir estilo necesario al contenedor para que los items aparezcan bien
-    itemContainer.style.position = 'relative';
-    itemContainer.style.height = '150px';  // tamaño visible para los items
-    itemContainer.style.border = '1px solid #ccc'; // opcional, para ver el contenedor
-
     const bins = document.querySelectorAll(".bin");
     const message = document.getElementById("message");
     const scoreEl = document.getElementById("score");
@@ -38,63 +34,45 @@ document.addEventListener('DOMContentLoaded', () => {
     let level = 1;
     let draggedItem = null;
     let draggedItemData = null;
-    let offsetX = 0;
-    let offsetY = 0;
 
     function newItem() {
         itemContainer.innerHTML = "";
-
         const random = itemsData[Math.floor(Math.random() * itemsData.length)];
         const el = document.createElement("div");
         el.classList.add("item");
         el.dataset.type = random.type;
         el.dataset.name = random.name;
         el.dataset.emoji = random.emoji;
+        el.draggable = true;
 
-        el.innerHTML = `
-            <div style="font-size: 32px;">${random.emoji}</div>
-            <span>${random.name}</span>
-        `;
+        const emoji = document.createElement("div");
+        emoji.textContent = random.emoji;
+        const label = document.createElement("span");
+        label.textContent = random.name;
 
-        el.style.position = 'absolute';
-        // Ajustar posición para que quede centrado en el contenedor
-        el.style.left = `calc(50% - 50px)`;  // Asumiendo ancho aprox 100px
-        el.style.top = '20px';
-        el.style.cursor = 'grab';
-        el.style.zIndex = '1';
-        el.style.width = '100px';  // tamaño fijo para facilitar posicionamiento
-        el.style.textAlign = 'center';
-        el.style.backgroundColor = '#f0f0f0';
-        el.style.borderRadius = '8px';
-        el.style.padding = '5px';
-        el.style.userSelect = 'none';
-
+        el.appendChild(emoji);
+        el.appendChild(label);
         itemContainer.appendChild(el);
 
-        el.addEventListener('mousedown', dragStart);
-        el.addEventListener('touchstart', dragStart, { passive: false });
+        el.addEventListener("mousedown", dragStart);
+        el.addEventListener("touchstart", dragStart, { passive: false });
     }
 
     function dragStart(e) {
-        e.preventDefault();
-        draggedItem = e.target.closest(".item");
+        e.preventDefault(); 
+        
+        draggedItem = e.target.closest('.item');
         if (!draggedItem) return;
-
-        const rect = draggedItem.getBoundingClientRect();
-        const clientX = e.clientX || e.touches[0].clientX;
-        const clientY = e.clientY || e.touches[0].clientY;
-
-        offsetX = clientX - rect.left;
-        offsetY = clientY - rect.top;
-
-        draggedItem.style.zIndex = '1000';
-        draggedItem.style.cursor = 'grabbing';
 
         draggedItemData = {
             type: draggedItem.dataset.type,
             name: draggedItem.dataset.name
         };
 
+        draggedItem.classList.add('dragging');
+        draggedItem.style.position = 'absolute';
+        draggedItem.style.zIndex = '1000';
+        
         document.addEventListener("mousemove", dragMove);
         document.addEventListener("touchmove", dragMove, { passive: false });
         document.addEventListener("mouseup", dragEnd);
@@ -108,18 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const clientX = e.clientX || e.touches[0].clientX;
         const clientY = e.clientY || e.touches[0].clientY;
 
-        // Limitar para que no se salga del contenedor padre (opcional)
-        const containerRect = itemContainer.getBoundingClientRect();
-        let newLeft = clientX - offsetX;
-        let newTop = clientY - offsetY;
-
-        // Opcional: limitar dentro de la ventana
-        if(newLeft < 0) newLeft = 0;
-        if(newTop < 0) newTop = 0;
-
-        draggedItem.style.left = `${newLeft}px`;
-        draggedItem.style.top = `${newTop}px`;
-        draggedItem.style.transform = 'none';
+        draggedItem.style.left = `${clientX - draggedItem.offsetWidth / 2}px`;
+        draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
     }
 
     function dragEnd(e) {
@@ -136,11 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
             message.textContent = `❌ Vuelve a intentarlo.`;
             message.style.color = "red";
             resetItemPosition();
-            setTimeout(newItem, 600);
+            setTimeout(newItem, 500);
         }
 
-        draggedItem.style.zIndex = '1';
-        draggedItem.style.cursor = 'grab';
+        draggedItem.classList.remove('dragging');
+        draggedItem.style.zIndex = 'auto';
         draggedItem = null;
 
         document.removeEventListener("mousemove", dragMove);
@@ -166,20 +134,22 @@ document.addEventListener('DOMContentLoaded', () => {
             scoreEl.textContent = "Puntos: " + score;
             message.textContent = `✅ ¡Correcto! ${draggedItemData.name} va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "green";
+            resetItemPosition();
             updateLevel();
+            setTimeout(newItem, 500); 
         } else {
             message.textContent = `❌ Incorrecto. ${draggedItemData.name} no va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "red";
+            resetItemPosition();
+            setTimeout(newItem, 500);
         }
-
-        setTimeout(newItem, 600);
     }
 
     function resetItemPosition() {
         if (draggedItem) {
-            draggedItem.style.left = `calc(50% - 50px)`;
-            draggedItem.style.top = '20px';
-            draggedItem.style.transform = 'none';
+            draggedItem.style.position = 'relative';
+            draggedItem.style.top = '0';
+            draggedItem.style.left = '0';
         }
     }
 
