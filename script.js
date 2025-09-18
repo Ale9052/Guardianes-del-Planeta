@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let score = 0;
     let level = 1;
-    let draggedItem = null; // Almacena el ítem que se está arrastrando
+    let draggedItem = null; 
 
     function newItem() {
         itemContainer.innerHTML = "";
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
-        // Eventos para arrastrar y soltar (tanto en escritorio como en móvil)
         el.addEventListener("mousedown", dragStart);
         el.addEventListener("touchstart", dragStart);
         document.addEventListener("mouseup", dragEnd);
@@ -55,25 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener("mousemove", dragMove);
         document.addEventListener("touchmove", dragMove);
 
-        // Inicializar el arrastre
         el.style.position = 'relative';
     }
 
-    // Guarda el ítem que se arrastra y su posición inicial
     function dragStart(e) {
         draggedItem = e.target.closest('.item');
         if (!draggedItem) return;
 
         draggedItem.classList.add('dragging');
         draggedItem.style.position = 'absolute';
+        draggedItem.style.zIndex = '1000'; // Asegura que esté en la capa superior
         
-        // Deshabilitar el arrastre nativo para móviles
         if (e.type === 'touchstart') {
             e.preventDefault();
         }
     }
 
-    // Mueve el ítem mientras se arrastra
     function dragMove(e) {
         if (!draggedItem) return;
 
@@ -84,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
     }
 
-    // Suelta el ítem y verifica la posición
     function dragEnd(e) {
         if (!draggedItem) return;
 
@@ -102,10 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         draggedItem.classList.remove('dragging');
+        draggedItem.style.zIndex = 'auto'; // Restablece el z-index
         draggedItem = null;
     }
 
-    // Encuentra el contenedor en el que se soltó el ítem
     function getDroppedBin(x, y) {
         let droppedBin = null;
         bins.forEach(bin => {
@@ -117,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return droppedBin;
     }
 
-    // Verifica si la clasificación es correcta
     function checkRecycling(bin) {
         if (draggedItem.dataset.type === bin.dataset.type) {
             score += 10;
@@ -126,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             message.style.color = "green";
             resetItemPosition();
             updateLevel();
-            setTimeout(newItem, 500); // Genera un nuevo ítem después de 0.5s
+            setTimeout(newItem, 500); 
         } else {
             message.textContent = `❌ Incorrecto. ${draggedItem.dataset.name} no va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "red";
@@ -134,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Restablece la posición del ítem si la respuesta es incorrecta
     function resetItemPosition() {
         if (draggedItem) {
             draggedItem.style.position = 'relative';
