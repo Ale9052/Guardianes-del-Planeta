@@ -120,11 +120,8 @@ section {
 
 /* ESTILOS CLAVE PARA QUE LOS OBJETOS SE VEAN */
 #items {
-    height: 120px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
+  position: relative;
+  height: 120px;
 }
 
 .item {
@@ -248,3 +245,4 @@ footer {
         text-align: center;
     }
 }
+
