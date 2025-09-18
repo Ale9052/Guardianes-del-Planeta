@@ -289,15 +289,7 @@ section {
     color: white; 
 }
 
-#items {
-    /* Estas propiedades son fundamentales para que el contenedor se muestre. */
-    height: 120px;
-    width: 100%;
-    /* Asegúrate de que no esté oculto. */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+
 
 /* Este es el cambio que necesitas */
 .item {
@@ -406,3 +398,4 @@ footer {
     }
 
 }
+
