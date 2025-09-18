@@ -1,0 +1,406 @@
+/* Estilos generales y variables con colores llamativos */
+:root {
+    --green-bin: #4CAF50; /* Verde vibrante para orgánicos */
+    --black-bin: #555; /* Negro más suave */
+    --yellow-bin: #FFD700; /* Amarillo brillante para plásticos */
+    --blue-bin: #0096FF; /* Azul cielo para papel */
+    --red-bin: #FF5733; /* Rojo anaranjado para vidrio */
+    --main-bg: #E0F7FA; /* Fondo principal azul claro */
+    --alternate-bg: #FFFDE7; /* Fondo alterno amarillo pálido */
+    --text-color: #333;
+    --heading-color: #00796B; /* Color de títulos verde-azulado */
+    --white-text: #fff;
+    --dark-text: #263238;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    color: var(--heading-color);
+    font-weight: 700;
+}
+
+/* Encabezado y navegación */
+header {
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    flex-wrap: wrap; 
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--heading-color);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--dark-text);
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: var(--heading-color);
+}
+
+/* Secciones de contenido */
+section {
+    padding: 4rem 5%;
+    text-align: center;
+}
+
+.alternate-bg {
+    background-color: var(--alternate-bg);
+}
+
+/* Sección principal (Hero) */
+.hero {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    gap: 2rem;
+    padding: 6rem 5% 4rem;
+    background: linear-gradient(135deg, var(--main-bg) 0%, #D4EEFF 100%);
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero-content h2 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Iconos de las 3 R */
+.icon-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.icon-grid div {
+    flex: 1 1 250px; 
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.icon-grid div:hover {
+    transform: translateY(-10px);
+}
+
+.icon-grid img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+/* Guía de reciclaje (contenedores) */
+.recycling-guide {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.guide-item {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.guide-item:hover {
+    transform: translateY(-10px);
+}
+
+.guide-item h4 {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: var(--dark-text);
+}
+
+.bin {
+    height: 150px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.bin img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.bin.green { background-color: var(--green-bin); }
+.bin.black { background-color: var(--black-bin); }
+.bin.yellow { background-color: var(--yellow-bin); }
+.bin.blue { background-color: var(--blue-bin); }
+.bin.red { background-color: var(--red-bin); }
+
+/* Beneficios y Curiosidades */
+.benefits-grid, .curiosity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card, .curiosity-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.benefit-card:hover, .curiosity-card:hover {
+    transform: translateY(-10px);
+}
+
+.benefit-card img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+/* Video responsivo */
+.video-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.video-container video {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Sección de juego */
+.game-section {
+    padding-bottom: 2rem;
+    background: linear-gradient(135deg, var(--alternate-bg) 0%, #FFFDE7 100%);
+}
+
+#game {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Estilo base para los contenedores del juego */
+.game-section .bin {
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background-color: transparent; 
+}
+
+.game-section .bin:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-section .bin span {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: white;
+}
+
+/* Colores específicos para los contenedores del juego */
+.bin.paper {
+    background-color: var(--blue-bin);
+}
+
+.bin.plastic {
+    background-color: var(--yellow-bin);
+}
+
+.bin.organic {
+    background-color: var(--green-bin);
+}
+
+.bin.glass {
+    background-color: var(--red-bin);
+}
+
+.bin.inorganic {
+    background-color: var(--black-bin);
+    color: white; 
+}
+
+#items {
+    min-height: 100px; 
+    margin: 2rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Este es el cambio que necesitas */
+.item {
+    cursor: grab;
+    transition: transform 0.3s;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 5px;
+    /* Nuevas dimensiones para el recuadro blanco */
+    width: 110px; 
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item:active {
+    cursor: grabbing;
+}
+
+.item img {
+    max-width: 100%;
+    max-height: 100%;
+    pointer-events: none; /* Evita arrastrar la imagen en lugar del div */
+}
+
+/* Estado al arrastrar un objeto */
+.dragging {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--heading-color);
+}
+
+#restart {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: var(--heading-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+#restart:hover {
+    background-color: #004d40;
+}
+
+/* Pie de página */
+footer {
+    text-align: center;
+    padding: 1rem;
+    background: var(--heading-color);
+    color: var(--white-text);
+}
+
+/* Media Queries para móviles y tablets */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-content {
+        order: 2; 
+    }
+
+    .hero-image {
+        order: 1; 
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .logo {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.2rem;
+    }
+
+    .hero-content h2 {
+        font-size: 2rem;
+    }
+
+    .guide-item, .benefit-card, .curiosity-card {
+        padding: 1rem;
+    }
+}
