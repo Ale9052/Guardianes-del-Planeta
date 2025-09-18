@@ -1,5 +1,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Evita selección de texto
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
 
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function newItem() {
         itemContainer.innerHTML = "";
+
         const random = itemsData[Math.floor(Math.random() * itemsData.length)];
         const el = document.createElement("div");
         el.classList.add("item");
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.dataset.emoji = random.emoji;
 
         el.innerHTML = `
-            <div>${random.emoji}</div>
+            <div style="font-size: 32px;">${random.emoji}</div>
             <span>${random.name}</span>
         `;
 
@@ -76,15 +78,17 @@ document.addEventListener('DOMContentLoaded', () => {
         offsetY = clientY - rect.top;
 
         draggedItem.style.zIndex = '1000';
+        draggedItem.style.cursor = 'grabbing';
+
         draggedItemData = {
             type: draggedItem.dataset.type,
             name: draggedItem.dataset.name
         };
 
-        document.addEventListener('mousemove', dragMove);
-        document.addEventListener('touchmove', dragMove, { passive: false });
-        document.addEventListener('mouseup', dragEnd);
-        document.addEventListener('touchend', dragEnd);
+        document.addEventListener("mousemove", dragMove);
+        document.addEventListener("touchmove", dragMove, { passive: false });
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("touchend", dragEnd);
     }
 
     function dragMove(e) {
@@ -117,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         draggedItem.style.zIndex = '1';
+        draggedItem.style.cursor = 'grab';
         draggedItem = null;
 
         document.removeEventListener("mousemove", dragMove);
