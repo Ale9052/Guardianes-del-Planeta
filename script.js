@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    const items = [
+
+    // Se deshabilita la selección de texto en toda la página para evitar interferencias
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+
+    const itemsData = [
         { emoji: "🗞️", type: "paper", name: "Periódico" },
         { emoji: "📦", type: "paper", name: "Caja" },
         { emoji: "📒", type: "paper", name: "Cuaderno" },
@@ -28,15 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let score = 0;
     let level = 1;
+    let draggedItem = null;
+    let draggedItemData = null;
 
     function newItem() {
         itemContainer.innerHTML = "";
-        const random = items[Math.floor(Math.random() * items.length)];
+        const random = itemsData[Math.floor(Math.random() * itemsData.length)];
         const el = document.createElement("div");
         el.classList.add("item");
-        el.draggable = true;
         el.dataset.type = random.type;
         el.dataset.name = random.name;
+        el.dataset.emoji = random.emoji;
+        el.draggable = true;
 
         const emoji = document.createElement("div");
         emoji.textContent = random.emoji;
@@ -47,10 +54,105 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
-        el.addEventListener("dragstart", e => {
-            e.dataTransfer.setData("type", el.dataset.type);
-            e.dataTransfer.setData("name", el.dataset.name);
+        // Se añaden los eventos para el arrastre con el mouse y el dedo
+        el.addEventListener("mousedown", dragStart);
+        el.addEventListener("touchstart", dragStart);
+    }
+
+    function dragStart(e) {
+        // Previene el comportamiento nativo y la selección de texto
+        e.preventDefault(); 
+        
+        draggedItem = e.target.closest('.item');
+        if (!draggedItem) return;
+
+        draggedItemData = {
+            type: draggedItem.dataset.type,
+            name: draggedItem.dataset.name
+        };
+
+        draggedItem.classList.add('dragging');
+        draggedItem.style.position = 'absolute';
+        draggedItem.style.zIndex = '1000';
+        
+        document.addEventListener("mousemove", dragMove);
+        document.addEventListener("touchmove", dragMove);
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("touchend", dragEnd);
+    }
+
+    function dragMove(e) {
+        if (!draggedItem) return;
+
+        e.preventDefault();
+
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+
+        draggedItem.style.left = `${clientX - draggedItem.offsetWidth / 2}px`;
+        draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
+    }
+
+    function dragEnd(e) {
+        if (!draggedItem) return;
+
+        const clientX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+        const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+
+        const droppedBin = getDroppedBin(clientX, clientY);
+
+        if (droppedBin) {
+            checkRecycling(droppedBin);
+        } else {
+            message.textContent = `❌ Incorrecto. Vuelve a intentar con otro contenedor.`;
+            message.style.color = "red";
+            resetItemPosition();
+        }
+
+        draggedItem.classList.remove('dragging');
+        draggedItem.style.zIndex = 'auto';
+        draggedItem = null;
+
+        // Se eliminan los event listeners para evitar conflictos
+        document.removeEventListener("mousemove", dragMove);
+        document.removeEventListener("touchmove", dragMove);
+        document.removeEventListener("mouseup", dragEnd);
+        document.removeEventListener("touchend", dragEnd);
+    }
+
+    function getDroppedBin(x, y) {
+        let droppedBin = null;
+        bins.forEach(bin => {
+            const rect = bin.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                droppedBin = bin;
+            }
         });
+        return droppedBin;
+    }
+
+    function checkRecycling(bin) {
+        if (draggedItemData.type === bin.dataset.type) {
+            score += 10;
+            scoreEl.textContent = "Puntos: " + score;
+            message.textContent = `✅ ¡Correcto! ${draggedItemData.name} va en ${bin.querySelector("span").textContent}.`;
+            message.style.color = "green";
+            resetItemPosition();
+            updateLevel();
+            setTimeout(newItem, 500); 
+        } else {
+            message.textContent = `❌ Incorrecto. ${draggedItemData.name} no va en ${bin.querySelector("span").textContent}.`;
+            message.style.color = "red";
+            resetItemPosition();
+        }
+    }
+
+    function resetItemPosition() {
+        if (draggedItem) {
+            draggedItem.style.position = 'relative';
+            draggedItem.style.top = '0';
+            draggedItem.style.left = '0';
+        }
     }
 
     function updateLevel() {
@@ -62,27 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             message.style.color = "blue";
         }
     }
-
-    bins.forEach(bin => {
-        bin.addEventListener("dragover", e => e.preventDefault());
-        bin.addEventListener("drop", e => {
-            const type = e.dataTransfer.getData("type");
-            const name = e.dataTransfer.getData("name");
-            const binName = bin.querySelector("span").textContent;
-
-            if (type === bin.dataset.type) {
-                score += 10;
-                scoreEl.textContent = "Puntos: " + score;
-                message.textContent = `✅ ¡Correcto! ${name} va en ${binName}`;
-                message.style.color = "green";
-            } else {
-                message.textContent = `❌ Incorrecto. ${name} no va en ${binName}. Prueba otro contenedor.`;
-                message.style.color = "red";
-            }
-            updateLevel();
-            newItem();
-        });
-    });
 
     restartBtn.addEventListener("click", () => {
         score = 0;
