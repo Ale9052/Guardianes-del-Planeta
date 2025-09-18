@@ -1,5 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const items = [
+    
+    // --- INYECCIÓN DE ESTILOS CSS PARA ASEGURAR VISIBILIDAD Y FUNCIONAMIENTO ---
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .item {
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none; /* For Safari */
+            -moz-user-select: none; /* For Firefox */
+            -ms-user-select: none; /* For IE10+ */
+            position: relative;
+        }
+
+        .dragging {
+            cursor: grabbing;
+            user-select: none;
+            -webkit-user-select: none; /* For Safari */
+            -moz-user-select: none; /* For Firefox */
+            -ms-user-select: none; /* For IE10+ */
+            position: absolute !important;
+            z-index: 1000;
+        }
+
+        .item > div {
+            font-size: 3rem;
+            line-height: 1;
+        }
+        
+        .item > span {
+            display: block;
+            text-align: center;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // --- CÓDIGO DEL JUEGO ---
+    const itemsData = [
         { emoji: "🗞️", type: "paper", name: "Periódico" },
         { emoji: "📦", type: "paper", name: "Caja" },
         { emoji: "📒", type: "paper", name: "Cuaderno" },
@@ -32,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function newItem() {
         itemContainer.innerHTML = "";
-        const random = items[Math.floor(Math.random() * items.length)];
+        const random = itemsData[Math.floor(Math.random() * itemsData.length)];
         const el = document.createElement("div");
         el.classList.add("item");
         el.dataset.type = random.type;
@@ -54,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function dragStart(e) {
-        // PREVIENE la selección de texto y el comportamiento de arrastre nativo
         e.preventDefault(); 
         
         draggedItem = e.target.closest('.item');
@@ -66,8 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         draggedItem.classList.add('dragging');
-        draggedItem.style.position = 'absolute';
-        draggedItem.style.zIndex = '1000';
         
         document.addEventListener("mousemove", dragMove);
         document.addEventListener("touchmove", dragMove);
@@ -78,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function dragMove(e) {
         if (!draggedItem) return;
 
-        // PREVIENE la selección de texto mientras se mueve el mouse
         e.preventDefault();
 
         const clientX = e.clientX || e.touches[0].clientX;
@@ -105,10 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         draggedItem.classList.remove('dragging');
-        draggedItem.style.zIndex = 'auto';
         draggedItem = null;
 
-        // Elimina los event listeners para evitar problemas
         document.removeEventListener("mousemove", dragMove);
         document.removeEventListener("touchmove", dragMove);
         document.removeEventListener("mouseup", dragEnd);
