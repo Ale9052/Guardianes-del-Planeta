@@ -1,4 +1,3 @@
-<script>
 document.addEventListener('DOMContentLoaded', () => {
     // Evita selección de texto
     document.body.style.userSelect = 'none';
@@ -24,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const itemContainer = document.getElementById("items");
+    // Añadir estilo necesario al contenedor para que los items aparezcan bien
+    itemContainer.style.position = 'relative';
+    itemContainer.style.height = '150px';  // tamaño visible para los items
+    itemContainer.style.border = '1px solid #ccc'; // opcional, para ver el contenedor
+
     const bins = document.querySelectorAll(".bin");
     const message = document.getElementById("message");
     const scoreEl = document.getElementById("score");
@@ -53,11 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         el.style.position = 'absolute';
-        el.style.left = '50%';
+        // Ajustar posición para que quede centrado en el contenedor
+        el.style.left = `calc(50% - 50px)`;  // Asumiendo ancho aprox 100px
         el.style.top = '20px';
-        el.style.transform = 'translateX(-50%)';
         el.style.cursor = 'grab';
         el.style.zIndex = '1';
+        el.style.width = '100px';  // tamaño fijo para facilitar posicionamiento
+        el.style.textAlign = 'center';
+        el.style.backgroundColor = '#f0f0f0';
+        el.style.borderRadius = '8px';
+        el.style.padding = '5px';
+        el.style.userSelect = 'none';
 
         itemContainer.appendChild(el);
 
@@ -98,8 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const clientX = e.clientX || e.touches[0].clientX;
         const clientY = e.clientY || e.touches[0].clientY;
 
-        draggedItem.style.left = `${clientX - offsetX}px`;
-        draggedItem.style.top = `${clientY - offsetY}px`;
+        // Limitar para que no se salga del contenedor padre (opcional)
+        const containerRect = itemContainer.getBoundingClientRect();
+        let newLeft = clientX - offsetX;
+        let newTop = clientY - offsetY;
+
+        // Opcional: limitar dentro de la ventana
+        if(newLeft < 0) newLeft = 0;
+        if(newTop < 0) newTop = 0;
+
+        draggedItem.style.left = `${newLeft}px`;
+        draggedItem.style.top = `${newTop}px`;
         draggedItem.style.transform = 'none';
     }
 
@@ -158,9 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetItemPosition() {
         if (draggedItem) {
-            draggedItem.style.left = '50%';
+            draggedItem.style.left = `calc(50% - 50px)`;
             draggedItem.style.top = '20px';
-            draggedItem.style.transform = 'translateX(-50%)';
+            draggedItem.style.transform = 'none';
         }
     }
 
@@ -185,4 +204,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newItem();
 });
-</script>
