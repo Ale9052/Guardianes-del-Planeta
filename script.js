@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let level = 1;
     let draggedItem = null;
     let draggedItemData = null;
+    let offsetX = 0;
+    let offsetY = 0;
 
     function newItem() {
         itemContainer.innerHTML = "";
@@ -42,46 +44,47 @@ document.addEventListener('DOMContentLoaded', () => {
         el.dataset.type = random.type;
         el.dataset.name = random.name;
         el.dataset.emoji = random.emoji;
-        el.draggable = false;
 
-        const emoji = document.createElement("div");
-        emoji.textContent = random.emoji;
-        const label = document.createElement("span");
-        label.textContent = random.name;
+        el.innerHTML = `
+            <div>${random.emoji}</div>
+            <span>${random.name}</span>
+        `;
 
-        el.appendChild(emoji);
-        el.appendChild(label);
+        el.style.position = 'absolute';
+        el.style.left = '50%';
+        el.style.top = '20px';
+        el.style.transform = 'translateX(-50%)';
+        el.style.cursor = 'grab';
+        el.style.zIndex = '1';
+
         itemContainer.appendChild(el);
 
-        // Estilos para evitar que desaparezca
-        el.style.position = "absolute";
-        el.style.left = "50%";
-        el.style.top = "20px";
-        el.style.transform = "translateX(-50%)";
-        el.style.zIndex = "1";
-
-        el.addEventListener("mousedown", dragStart);
-        el.addEventListener("touchstart", dragStart, { passive: false });
+        el.addEventListener('mousedown', dragStart);
+        el.addEventListener('touchstart', dragStart, { passive: false });
     }
 
     function dragStart(e) {
-        e.preventDefault(); 
-        
-        draggedItem = e.target.closest('.item');
+        e.preventDefault();
+        draggedItem = e.target.closest(".item");
         if (!draggedItem) return;
 
+        const rect = draggedItem.getBoundingClientRect();
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+
+        draggedItem.style.zIndex = '1000';
         draggedItemData = {
             type: draggedItem.dataset.type,
             name: draggedItem.dataset.name
         };
 
-        draggedItem.classList.add('dragging');
-        draggedItem.style.zIndex = '1000';
-
-        document.addEventListener("mousemove", dragMove);
-        document.addEventListener("touchmove", dragMove, { passive: false });
-        document.addEventListener("mouseup", dragEnd);
-        document.addEventListener("touchend", dragEnd);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('touchmove', dragMove, { passive: false });
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
     }
 
     function dragMove(e) {
@@ -91,9 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const clientX = e.clientX || e.touches[0].clientX;
         const clientY = e.clientY || e.touches[0].clientY;
 
-        draggedItem.style.left = `${clientX - draggedItem.offsetWidth / 2}px`;
-        draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
-        draggedItem.style.transform = "none";
+        draggedItem.style.left = `${clientX - offsetX}px`;
+        draggedItem.style.top = `${clientY - offsetY}px`;
+        draggedItem.style.transform = 'none';
     }
 
     function dragEnd(e) {
@@ -110,10 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             message.textContent = `❌ Vuelve a intentarlo.`;
             message.style.color = "red";
             resetItemPosition();
-            setTimeout(newItem, 500);
+            setTimeout(newItem, 600);
         }
 
-        draggedItem.classList.remove('dragging');
         draggedItem.style.zIndex = '1';
         draggedItem = null;
 
@@ -146,14 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
             message.style.color = "red";
         }
 
-        setTimeout(newItem, 500); 
+        setTimeout(newItem, 600);
     }
 
     function resetItemPosition() {
         if (draggedItem) {
-            draggedItem.style.left = "50%";
-            draggedItem.style.top = "20px";
-            draggedItem.style.transform = "translateX(-50%)";
+            draggedItem.style.left = '50%';
+            draggedItem.style.top = '20px';
+            draggedItem.style.transform = 'translateX(-50%)';
         }
     }
 
