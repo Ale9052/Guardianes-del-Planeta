@@ -54,13 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
-        // Se añaden los eventos para el arrastre con el mouse y el dedo
         el.addEventListener("mousedown", dragStart);
         el.addEventListener("touchstart", dragStart);
     }
 
     function dragStart(e) {
-        // Previene el comportamiento nativo y la selección de texto
         e.preventDefault(); 
         
         draggedItem = e.target.closest('.item');
@@ -104,16 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (droppedBin) {
             checkRecycling(droppedBin);
         } else {
-            message.textContent = `❌ Incorrecto. Vuelve a intentar con otro contenedor.`;
+            message.textContent = `❌ Vuelve a intentarlo.`;
             message.style.color = "red";
             resetItemPosition();
+            setTimeout(newItem, 500); // Genera un nuevo objeto al soltar fuera del contenedor
         }
 
         draggedItem.classList.remove('dragging');
         draggedItem.style.zIndex = 'auto';
         draggedItem = null;
 
-        // Se eliminan los event listeners para evitar conflictos
         document.removeEventListener("mousemove", dragMove);
         document.removeEventListener("touchmove", dragMove);
         document.removeEventListener("mouseup", dragEnd);
@@ -144,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             message.textContent = `❌ Incorrecto. ${draggedItemData.name} no va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "red";
             resetItemPosition();
+            setTimeout(newItem, 500);
         }
     }
 
@@ -156,23 +155,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateLevel() {
-        let newLevel = Math.floor(score / 50) + 1;
-        if (newLevel !== level) {
-            level = newLevel;
-            levelEl.textContent = "Nivel: " + level;
-            message.textContent = `🎉 ¡Subiste al nivel ${level}!`;
-            message.style.color = "blue";
-        }
-    }
-
-    restartBtn.addEventListener("click", () => {
-        score = 0;
-        level = 1;
-        scoreEl.textContent = "Puntos: " + score;
-        levelEl.textContent = "Nivel: " + level;
-        message.textContent = "";
-        newItem();
-    });
-
-    newItem();
-});
+        let newLevel = Math.
