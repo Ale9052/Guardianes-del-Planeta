@@ -28,15 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let score = 0;
     let level = 1;
+    let currentItem = null;
 
     function newItem() {
         itemContainer.innerHTML = "";
         const random = items[Math.floor(Math.random() * items.length)];
         const el = document.createElement("div");
         el.classList.add("item");
-        el.draggable = true;
         el.dataset.type = random.type;
         el.dataset.name = random.name;
+        el.dataset.emoji = random.emoji; // Guardar el emoji también
 
         const emoji = document.createElement("div");
         emoji.textContent = random.emoji;
@@ -47,9 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
-        el.addEventListener("dragstart", e => {
-            e.dataTransfer.setData("type", el.dataset.type);
-            e.dataTransfer.setData("name", el.dataset.name);
+        // Almacenar el ítem actual y agregar un evento de clic
+        currentItem = el;
+        currentItem.addEventListener("click", () => {
+            message.textContent = `Seleccionaste "${currentItem.dataset.name}". Ahora haz clic en el contenedor correcto.`;
+            message.style.color = "blue";
+            // Resalta el objeto seleccionado
+            currentItem.classList.add('selected');
         });
     }
 
@@ -64,13 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     bins.forEach(bin => {
-        bin.addEventListener("dragover", e => e.preventDefault());
-        bin.addEventListener("drop", e => {
-            const type = e.dataTransfer.getData("type");
-            const name = e.dataTransfer.getData("name");
+        bin.addEventListener("click", e => {
+            // Asegúrate de que haya un objeto seleccionado
+            if (!currentItem) {
+                message.textContent = "¡Primero selecciona un objeto para reciclar!";
+                message.style.color = "red";
+                return;
+            }
+
+            const type = currentItem.dataset.type;
+            const name = currentItem.dataset.name;
+            const binType = bin.dataset.type;
             const binName = bin.querySelector("span").textContent;
 
-            if (type === bin.dataset.type) {
+            if (type === binType) {
                 score += 10;
                 scoreEl.textContent = "Puntos: " + score;
                 message.textContent = `✅ ¡Correcto! ${name} va en ${binName}`;
@@ -79,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 message.textContent = `❌ Incorrecto. ${name} no va en ${binName}. Prueba otro contenedor.`;
                 message.style.color = "red";
             }
+            
+            // Elimina la clase de seleccionado
+            currentItem.classList.remove('selected');
+            
             updateLevel();
             newItem();
         });
