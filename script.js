@@ -1,6 +1,5 @@
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Se deshabilita la selección de texto en toda la página para evitar interferencias
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
 
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.dataset.type = random.type;
         el.dataset.name = random.name;
         el.dataset.emoji = random.emoji;
-        el.draggable = true;
+        el.draggable = false;
 
         const emoji = document.createElement("div");
         emoji.textContent = random.emoji;
@@ -54,8 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
+        // Estilos para evitar que desaparezca
+        el.style.position = "absolute";
+        el.style.left = "50%";
+        el.style.top = "20px";
+        el.style.transform = "translateX(-50%)";
+        el.style.zIndex = "1";
+
         el.addEventListener("mousedown", dragStart);
-        el.addEventListener("touchstart", dragStart);
+        el.addEventListener("touchstart", dragStart, { passive: false });
     }
 
     function dragStart(e) {
@@ -70,18 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         draggedItem.classList.add('dragging');
-        draggedItem.style.position = 'absolute';
         draggedItem.style.zIndex = '1000';
-        
+
         document.addEventListener("mousemove", dragMove);
-        document.addEventListener("touchmove", dragMove);
+        document.addEventListener("touchmove", dragMove, { passive: false });
         document.addEventListener("mouseup", dragEnd);
         document.addEventListener("touchend", dragEnd);
     }
 
     function dragMove(e) {
         if (!draggedItem) return;
-
         e.preventDefault();
 
         const clientX = e.clientX || e.touches[0].clientX;
@@ -89,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         draggedItem.style.left = `${clientX - draggedItem.offsetWidth / 2}px`;
         draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
+        draggedItem.style.transform = "none";
     }
 
     function dragEnd(e) {
@@ -109,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         draggedItem.classList.remove('dragging');
-        draggedItem.style.zIndex = 'auto';
+        draggedItem.style.zIndex = '1';
         draggedItem = null;
 
         document.removeEventListener("mousemove", dragMove);
@@ -135,22 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
             scoreEl.textContent = "Puntos: " + score;
             message.textContent = `✅ ¡Correcto! ${draggedItemData.name} va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "green";
-            resetItemPosition();
             updateLevel();
-            setTimeout(newItem, 500); 
         } else {
             message.textContent = `❌ Incorrecto. ${draggedItemData.name} no va en ${bin.querySelector("span").textContent}.`;
             message.style.color = "red";
-            resetItemPosition();
-            setTimeout(newItem, 500);
         }
+
+        setTimeout(newItem, 500); 
     }
 
     function resetItemPosition() {
         if (draggedItem) {
-            draggedItem.style.position = 'relative';
-            draggedItem.style.top = '0';
-            draggedItem.style.left = '0';
+            draggedItem.style.left = "50%";
+            draggedItem.style.top = "20px";
+            draggedItem.style.transform = "translateX(-50%)";
         }
     }
 
@@ -175,3 +178,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newItem();
 });
+</script>
