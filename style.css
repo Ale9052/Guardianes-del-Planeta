@@ -118,22 +118,17 @@ section {
     margin-bottom: 1rem;
 }
 
-/* --- CORRECCIONES CLAVE --- */
-
+/* ESTILOS CLAVE PARA EL JUEGO */
 #items {
-  position: relative;
-  width: 100%;
-  height: 150px; /* o el tamaño que quieras */
-  border: 1px solid #ccc; /* opcional para visualizar */
-  margin-bottom: 10px;
+    /* Estas propiedades son la clave para que el objeto aparezca y se centre */
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
 }
 
-
 .item {
-    /* Para que el item pueda moverse con absolute sin problemas */
-    position: absolute; /* IMPORTANTE para que se mueva libremente */
-    
-    /* Estilo visual */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -149,11 +144,7 @@ section {
     height: 120px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: center;
-    
-    /* Posición inicial para evitar que desaparezca */
-    top: 10px;
-    left: 10px;
-    transition: none !important; /* Evitar transiciones que causen saltos */
+    transition: transform 0.2s;
 }
 
 .item > div {
@@ -170,9 +161,7 @@ section {
 .dragging {
     cursor: grabbing;
     opacity: 0.8;
-    position: absolute; /* No uses !important */
-    z-index: 1000; /* Para que siempre esté encima */
-    /* Al arrastrar, top y left deben asignarse por JS para que se mueva bien */
+    position: absolute !important;
 }
 
 #game {
@@ -261,4 +250,3 @@ footer {
         text-align: center;
     }
 }
-
