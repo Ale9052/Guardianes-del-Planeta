@@ -118,13 +118,21 @@ section {
     margin-bottom: 1rem;
 }
 
-/* ESTILOS CLAVE PARA QUE LOS OBJETOS SE VEAN */
+/* --- CORRECCIONES CLAVE --- */
+
 #items {
-  position: relative;
+  position: relative; /* Mantener para referencia de objetos posicionados */
   height: 120px;
+  user-select: none; /* Evitar selección de texto al arrastrar */
+  -webkit-user-select: none;
+  touch-action: none; /* Mejor para dispositivos táctiles */
 }
 
 .item {
+    /* Para que el item pueda moverse con absolute sin problemas */
+    position: absolute; /* IMPORTANTE para que se mueva libremente */
+    
+    /* Estilo visual */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -140,6 +148,11 @@ section {
     height: 120px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: center;
+    
+    /* Posición inicial para evitar que desaparezca */
+    top: 10px;
+    left: 10px;
+    transition: none !important; /* Evitar transiciones que causen saltos */
 }
 
 .item > div {
@@ -156,7 +169,9 @@ section {
 .dragging {
     cursor: grabbing;
     opacity: 0.8;
-    position: absolute !important;
+    position: absolute; /* No uses !important */
+    z-index: 1000; /* Para que siempre esté encima */
+    /* Al arrastrar, top y left deben asignarse por JS para que se mueva bien */
 }
 
 #game {
@@ -245,4 +260,3 @@ footer {
         text-align: center;
     }
 }
-
