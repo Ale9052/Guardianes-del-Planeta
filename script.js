@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    const items = [
+    const itemsData = [
         { emoji: "🗞️", type: "paper", name: "Periódico" },
         { emoji: "📦", type: "paper", name: "Caja" },
         { emoji: "📒", type: "paper", name: "Cuaderno" },
@@ -28,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let score = 0;
     let level = 1;
-    let currentItem = null; // Objeto seleccionado para reciclar
+    let draggedItem = null; // Almacena el ítem que se está arrastrando
 
     function newItem() {
         itemContainer.innerHTML = "";
-        const random = items[Math.floor(Math.random() * items.length)];
+        const random = itemsData[Math.floor(Math.random() * itemsData.length)];
         const el = document.createElement("div");
         el.classList.add("item");
         el.dataset.type = random.type;
@@ -48,14 +47,100 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(label);
         itemContainer.appendChild(el);
 
-        // Almacenar el ítem actual y agregar un evento de clic
-        currentItem = el;
-        currentItem.addEventListener("click", () => {
-            message.textContent = `Seleccionaste "${currentItem.dataset.name}". Ahora haz clic en el contenedor correcto.`;
-            message.style.color = "blue";
-            // Resalta el objeto seleccionado
-            currentItem.classList.add('selected');
+        // Eventos para arrastrar y soltar (tanto en escritorio como en móvil)
+        el.addEventListener("mousedown", dragStart);
+        el.addEventListener("touchstart", dragStart);
+        document.addEventListener("mouseup", dragEnd);
+        document.addEventListener("touchend", dragEnd);
+        document.addEventListener("mousemove", dragMove);
+        document.addEventListener("touchmove", dragMove);
+
+        // Inicializar el arrastre
+        el.style.position = 'relative';
+    }
+
+    // Guarda el ítem que se arrastra y su posición inicial
+    function dragStart(e) {
+        draggedItem = e.target.closest('.item');
+        if (!draggedItem) return;
+
+        draggedItem.classList.add('dragging');
+        draggedItem.style.position = 'absolute';
+        
+        // Deshabilitar el arrastre nativo para móviles
+        if (e.type === 'touchstart') {
+            e.preventDefault();
+        }
+    }
+
+    // Mueve el ítem mientras se arrastra
+    function dragMove(e) {
+        if (!draggedItem) return;
+
+        const clientX = e.clientX || e.touches[0].clientX;
+        const clientY = e.clientY || e.touches[0].clientY;
+
+        draggedItem.style.left = `${clientX - draggedItem.offsetWidth / 2}px`;
+        draggedItem.style.top = `${clientY - draggedItem.offsetHeight / 2}px`;
+    }
+
+    // Suelta el ítem y verifica la posición
+    function dragEnd(e) {
+        if (!draggedItem) return;
+
+        const clientX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+        const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+
+        const bin = getDroppedBin(clientX, clientY);
+
+        if (bin) {
+            checkRecycling(bin);
+        } else {
+            message.textContent = `❌ Incorrecto. Vuelve a intentar con otro contenedor.`;
+            message.style.color = "red";
+            resetItemPosition();
+        }
+
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+    }
+
+    // Encuentra el contenedor en el que se soltó el ítem
+    function getDroppedBin(x, y) {
+        let droppedBin = null;
+        bins.forEach(bin => {
+            const rect = bin.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                droppedBin = bin;
+            }
         });
+        return droppedBin;
+    }
+
+    // Verifica si la clasificación es correcta
+    function checkRecycling(bin) {
+        if (draggedItem.dataset.type === bin.dataset.type) {
+            score += 10;
+            scoreEl.textContent = "Puntos: " + score;
+            message.textContent = `✅ ¡Correcto! ${draggedItem.dataset.name} va en ${bin.querySelector("span").textContent}.`;
+            message.style.color = "green";
+            resetItemPosition();
+            updateLevel();
+            setTimeout(newItem, 500); // Genera un nuevo ítem después de 0.5s
+        } else {
+            message.textContent = `❌ Incorrecto. ${draggedItem.dataset.name} no va en ${bin.querySelector("span").textContent}.`;
+            message.style.color = "red";
+            resetItemPosition();
+        }
+    }
+
+    // Restablece la posición del ítem si la respuesta es incorrecta
+    function resetItemPosition() {
+        if (draggedItem) {
+            draggedItem.style.position = 'relative';
+            draggedItem.style.top = '0';
+            draggedItem.style.left = '0';
+        }
     }
 
     function updateLevel() {
@@ -67,38 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
             message.style.color = "blue";
         }
     }
-
-    bins.forEach(bin => {
-        bin.addEventListener("click", () => {
-            // Asegúrate de que haya un objeto seleccionado
-            if (!currentItem) {
-                message.textContent = "¡Primero selecciona un objeto para reciclar!";
-                message.style.color = "red";
-                return;
-            }
-
-            const type = currentItem.dataset.type;
-            const name = currentItem.dataset.name;
-            const binType = bin.dataset.type;
-            const binName = bin.querySelector("span").textContent;
-
-            if (type === binType) {
-                score += 10;
-                scoreEl.textContent = "Puntos: " + score;
-                message.textContent = `✅ ¡Correcto! ${name} va en ${binName}`;
-                message.style.color = "green";
-            } else {
-                message.textContent = `❌ Incorrecto. ${name} no va en ${binName}. Prueba otro contenedor.`;
-                message.style.color = "red";
-            }
-            
-            // Elimina la clase de seleccionado y genera un nuevo ítem
-            currentItem.classList.remove('selected');
-            
-            updateLevel();
-            newItem();
-        });
-    });
 
     restartBtn.addEventListener("click", () => {
         score = 0;
